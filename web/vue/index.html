@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/milligram/1.3.0/milligram.min.css" />
+</html>
+<body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.13/vue.min.js"></script>
+<div id="app" class="container">
+    <input v-model="my_name"></input>
+    <br>
+    <span v-if="my_name"> 
+        {{ my_name }} is awesome!!
+    </span>
+    <span v-else> 
+        Input your name above, please.
+    </span>
+</div>
+<script>
+var app = new Vue({
+  el: '#app',
+  data: {
+    my_name: ''
+  }
+})
+</script>
+</body>
+
