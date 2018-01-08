@@ -1,7 +1,12 @@
-first_number = input("Input the first number: ")
-second_number = input("Input the second number: ")
+import sys
 
-sum = int(first_number) + int(second_number)
+first_number = input("Input the 1st number: ")
+if int(first_number) >= 10000:
+    print("The computer couldn't read the number\nbecause it was too big")
+    sys.exit()
 
-print("To sum up to: " + str(sum))
+second_number = input("Input the 2nd number: ")
 
+sum = int(first_number) * int(second_number)
+
+print("The answer is: " + str(sum))
