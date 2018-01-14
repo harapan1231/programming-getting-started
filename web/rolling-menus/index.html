@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <link rel="stylesheet" href="lib/css/milligram.min.css">
+  <link rel="stylesheet" href="css/rotate.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/utility.css">
+  <link rel="stylesheet" href="css/main.css">
+  <script src="lib/js/jquery.min.js"></script>
+  <script src="lib/js/mithril.min.js"></script>
+  <script src="js/util.js"></script>
+  <script src="js/main.js"></script>
+  <style>
+  </style>
+</head>
+<body>
+  <div id="nav"></div>
+  <div id="content" class="page container hidden"></div>
+  
+  <script>
+  var nav = {};
+  nav.view = function() {
+    return m(".selector",
+      m("ul",
+        nav.vm.list.map(function(itm, idx) {
+          return m("li",
+              [
+                m("input", {"id": itm.id, "type": "button", onclick: () => {
+                  $("#content").html(itm.html);
+                  $("#content").fadeIn();
+                }}),
+                m("label[for='" + itm.id + "']", {"class": itm.class}, 
+                  itm.caption
+                )
+              ]
+            );
+        })
+      ),
+      m("button", {onclick: nav.vm.selectorClick}, "Click Me")
+    );
+  };
+  nav.vm = (function() {
+    var vm = {};
+    vm.angleStart = -360;
+    // jquery rotate animation
+    vm.rotate = function(li,d) {
+        $({d:vm.angleStart}).animate({d:d}, {
+            step: function(now) {
+                $(li)
+                  .css({ transform: 'rotate('+now+'deg)' })
+                  .find('label')
+                      .css({ transform: 'rotate('+(-now)+'deg)' });
+            }, duration: 0
+        });
+    };
+    // show / hide the options
+    vm.toggleOptions = function(s) {
+        $(s).toggleClass('open');
+        var li = $(s).find('li');
+        var deg = $(s).hasClass('half') ? 180/(li.length-1) : 360/li.length;
+        for(var i=0; i<li.length; i++) {
+            var d = $(s).hasClass('half') ? (i*deg)-90 : i*deg;
+            $(s).hasClass('open') ? vm.rotate(li[i],d) : vm.rotate(li[i], vm.angleStart);
+        }
+    };
+    vm.selectorClick = function(e) {
+        vm.toggleOptions($(this).parent());
+    };
+    vm.list = [
+      {id: "nb01", caption: "検索", class: "nav-btn active", html: "<h2>検索条件入力</h2> <hr class='divider'> <h4 class='center'>検索条件を入力してください</h4> <div class='row input-field'> <div class='col span_2 label'>顧客名</div><div class='col span_10'> <input type='text' class='text-input'> </div></div><div class='row input-field bottom'> <div class='col span_2 label'>都道府県</div><div class='col span_2   multi-dropdown'> <select multiple> <option value></option><option value='1'>北海道<option value='2'>青森県<option value='3'>岩手県<option value='4'>宮城県<option value='5'>秋田県<option value='6'>山形県<option value='7'>福島県<option value='8'>茨城県<option value='9'>栃木県<option value='10'>群馬県<option value='11'>埼玉県<option value='12'>千葉県<option value='13'>東京都<option value='14'>神奈川県<option value='15'>新潟県<option value='16'>富山県<option value='17'>石川県<option value='18'>福井県<option value='19'>山梨県<option value='20'>長野県<option value='21'>岐阜県<option value='22'>静岡県<option value='23'>愛知県<option value='24'>三重県<option value='25'>滋賀県<option value='26'>京都府<option value='27'>大阪府<option value='28'>兵庫県<option value='29'>奈良県<option value='30'>和歌山県<option value='31'>鳥取県<option value='32'>島根県<option value='33'>岡山県<option value='34'>広島県<option value='35'>山口県<option value='36'>徳島県<option value='37'>香川県<option value='38'>愛媛県<option value='39'>高知県<option value='40'>福岡県<option value='41'>佐賀県<option value='42'>長崎県<option value='43'>熊本県<option value='44'>大分県<option value='45'>宮崎県<option value='46'>鹿児島県<option value='47'>沖縄県 </select> <span class='bottom'>複数選択が可能です</span> </div></div><div class='row input-field'> <div class='col span_2 label'>資本金</div><div class='col span_10'> <input type='text' class='text-input'> <span class='center v-center'>〜</span> <input type='text' class='text-input'> <span class='v-center'>（範囲指定 小〜大）（単位：千円）</span> </div></div><div class='row input-field'> <div class='col span_2 label'>累計取引高</div><div class='col span_10'> <input type='text' class='text-input'> <span class='center v-center'>〜</span> <input type='text' class='text-input'> <span class='v-center'>（範囲指定 小〜大）（単位：千円）</span> </div></div><div class='row input-field center'> <input type='radio' id='and_cond' name='logic_cond' class='radio' checked> <labeL class='radio-label' for='and_cond'>and検索</labeL> <input type='radio' id='or_cond' name='logic_cond' class='radio'> <labeL class='radio-label' for='or_cond'>or検索</labeL> </div></div><hr class='divider'> <div class='row center'> <button class='btn primary-btn' onclick='$(\"#search_ret\").append(\"<tr><td>検索結果</td></tr>\");'>実行</button> </div> <hr class='divider'> <h2>検索結果</h2> <div> <table id='search_ret'></table> </div><hr class='divider'> <div class='row center'> <button class='btn primary-btn'>ダウンロード</button> <button class='btn' onclick='util.returnHome();'>メニューへ戻る</button> </div>"},
+      {id: "nb02", caption: "集計", class: "nav-btn active", html: "<h2>都道府県別累積取引額</h2> <hr class='divider'> <h4 class='center'>集計結果は以下の通りです</h4> <div> <div class='row'> <div class='col offset_span_2 span_3 center th'>顧客名</div><div class='col span_5 center th'>累積取引額（単位：千円）</div></div><div class='row'> <div class='col offset_span_2 span_3 center td'>神奈川県</div><div class='col span_5 center td'>123,456,789</div></div><div class='row'> <div class='col offset_span_2 span_3 center td'>富山県</div><div class='col span_5 center td'>123,456,789</div></div></div><hr class='divider'> <div class='row center'> <button class='btn' onclick='util.returnHome();'>メニューへ戻る</button> </div>"},
+      {id: "nb03", caption: "登録", class: "nav-btn active", html: "<h2>データ登録</h2> <hr class='divider'> <h4 class='center'>各項目を入力してください</h4> <div> <div class='row input-field'> <div class='col span_2 label'>顧客名</div><span class='col span_1 caution'>※必須</span> <input type='text' class='col span_4 text-input'> <span class='col span_4'>（全角〜２０文字）</span> </div><br><div class='row input-field'> <div class='col span_2 label'>郵便番号</div><span class='col span_1 caution'>※必須</span> <input type='text' class='col span_2 text-input'> <span class='col span_6'>（半角〜８文字）</span> </div><div class='row input-field'> <div class='col span_2 label'>住所-都道府県</div><span class='col span_1 caution'>※必須</span> <div class='dropdown'> <select class='col span_2'> <option disabled selected value>-- 選択してください --</option><option value='1'>北海道<option value='2'>青森県<option value='3'>岩手県<option value='4'>宮城県<option value='5'>秋田県<option value='6'>山形県<option value='7'>福島県<option value='8'>茨城県<option value='9'>栃木県<option value='10'>群馬県<option value='11'>埼玉県<option value='12'>千葉県<option value='13'>東京都<option value='14'>神奈川県<option value='15'>新潟県<option value='16'>富山県<option value='17'>石川県<option value='18'>福井県<option value='19'>山梨県<option value='20'>長野県<option value='21'>岐阜県<option value='22'>静岡県<option value='23'>愛知県<option value='24'>三重県<option value='25'>滋賀県<option value='26'>京都府<option value='27'>大阪府<option value='28'>兵庫県<option value='29'>奈良県<option value='30'>和歌山県<option value='31'>鳥取県<option value='32'>島根県<option value='33'>岡山県<option value='34'>広島県<option value='35'>山口県<option value='36'>徳島県<option value='37'>香川県<option value='38'>愛媛県<option value='39'>高知県<option value='40'>福岡県<option value='41'>佐賀県<option value='42'>長崎県<option value='43'>熊本県<option value='44'>大分県<option value='45'>宮崎県<option value='46'>鹿児島県<option value='47'>沖縄県 </select> </div><p class='col span_6'></p></div><div class='row input-field'> <div class='col span_2 label'>住所-都道府県以下</div><span class='col span_1 caution'>※必須</span> <input type='text' class='col span_6 text-input'> <span class='col span_2'>（全角〜３０文字）</span> </div><div class='row input-field'> <div class='col span_2 label'>電話番号</div><span class='col span_1 caution'>※必須</span> <input type='text' class='col span_2 text-input'> <span class='col span_6'>（半角〜１２文字）</span> </div><br><div class='row input-field'> <div class='col span_2 label'>資本金</div><span class='col span_1 caution'>※必須</span> <input type='text' class='col span_2 text-input'> <span class='col span_6'>（半角英数〜８文字）（単位：千円）</span> </div></div><hr class='divider'> <div class='row center'> <button class='btn'>クリア</button> <button class='btn primary-btn'>登録</button> <button class='btn' onclick='util.returnHome();'>メニューへ戻る</button> </div>"},
+      {id: "nb04", caption: "設定", class: "nav-btn passive", html: "Ooops <button class='btn right' onclick='util.returnHome();'>メニューへ戻る</button>"},
+      {id: "nb08", caption: "終了", class: "nav-btn end", html: "Quit? <button class='btn right' onclick='util.returnHome();'>メニューへ戻る</button>"},
+      {id: "nb05", caption: "参考", class: "nav-btn passive", html: "Ooops <button class='btn right' onclick='util.returnHome();'>メニューへ戻る</button>"},
+      {id: "nb06", caption: "リンク", class: "nav-btn passive", html: "Ooops <button class='btn right' onclick='util.returnHome();'>メニューへ戻る</button>"},
+      {id: "nb07", caption: "おまけ", class: "nav-btn passive", html: "Ooops <button class='btn right' onclick='util.returnHome();'>メニューへ戻る</button>"},
+    ];
+    
+    vm.init = function() {
+      setTimeout(function() { vm.toggleOptions('.selector'); }, 200);
+    };
+    return vm;
+  }());
+  nav.controller = function() {
+    nav.vm.init();
+  };
+  
+  var content = {};
+  // content.view = function() {
+  //   return m("div", [
+  //     m("input")
+  //   ]);
+  // };
+  content.vm = (function() {
+    var vm = {};
+    vm.returnHome = util.returnHome;
+    vm.init = function() {
+    };
+    return vm;
+  }());
+  content.controller = function() {
+    content.vm.init();
+  };
+  
+  m.mount(document.getElementById("nav"), {controller: nav.controller, view: nav.view});
+  m.mount(document.getElementById("content"), {controller: content.controller, view: content.view});
+  </script>
+</body>
+</html>
